@@ -3,10 +3,12 @@ all: clean v
 
 v: v.c
 	cc -std=gnu11 -w -o v v.c
-	./v -o v compiler
+	./v -o vnew compiler
+	mv vnew v
 	rm v.c
 
 v.c:
+	#cp compiler/v019.c v.c
 	curl -Os https://raw.githubusercontent.com/vlang/vc/master/v.c
 
 test: v

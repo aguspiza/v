@@ -447,7 +447,14 @@ pub fn home_dir() string {
 	mut home := os.getenv('HOME')
 	$if windows {
 		home = os.getenv('HOMEDRIVE')
-		home += os.getenv('HOMEPATH')
+		if home.is_empty() {
+			home = os.getenv('SYSTEMDRIVE')
+		}
+		mut homepath := os.getenv('HOMEPATH')
+		if homepath.is_empty() {
+			homepath = '\\Users\\' + os.getenv('USERNAME')
+		}
+		home += homepath
 	}
 	home += '/'
 	return home
