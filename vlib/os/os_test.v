@@ -1,6 +1,10 @@
 import os
 
 fn test_setenv() {
+  $if windows {
+    println('setenv not implemented!!')
+    return
+  }
   os.setenv('foo', 'bar', true)
   assert os.getenv('foo') == 'bar'
   
@@ -32,4 +36,17 @@ fn test_write_and_read_string_to_file() {
   assert hello == read_hello
 
   os.rm(filename)
+}
+
+fn test_uname() {
+  uname := os.uname()
+  println(uname)
+  $if linux {
+    assert uname == 'Linux'
+  }
+
+  $if mac {
+    assert uname == 'Darwin'
+  }
+
 }

@@ -68,6 +68,20 @@ struct C.stat {
 	st_mode int
 }
 
+const ( UTSNAME_NODE_LENGTH  = 65 )
+struct utsname {
+mut:
+	sysname [65]byte
+	nodename [65]byte
+	/* Current release level of this implementation.  */
+	release [65]byte
+	/* Current version level of this release.  */
+	version [65]byte
+	/* Name of the hardware type the system is running on.  */
+	machine [65]byte
+	domainname [65]byte
+}
+
 struct C.DIR {
 
 }
@@ -288,21 +302,23 @@ pub fn getenv(key string) string {
 }
 
 pub fn setenv(name string, value string, overwrite bool) int {
-$if windows {
- 
-} 
-$else { 
-  return C.setenv(name.cstr(), value.cstr(), overwrite)
-} 
+	$if windows {
+		println('setenv not implemented!!')
+		return 0
+	}
+	$else {
+		return C.setenv(name.cstr(), value.cstr(), overwrite)
+	} 
 }
 
 pub fn unsetenv(name string) int {
-$if windows {
- 
-} 
-$else { 
-  return C.unsetenv(name.cstr())
-} 
+	$if windows {
+		println('unsetenv not implemented!!')
+		return 0
+	}
+	$else {
+		return C.unsetenv(name.cstr())
+	}
 }
 
 // `file_exists` returns true if `path` exists.
@@ -440,14 +456,40 @@ pub fn get_raw_line() string {
 	} 
 }
 
+pub fn uname() string {
+
+	$if windows {
+		return 'Windows'
+	}
+
+	mut buffer := &utsname{}
+	//mut buffer := malloc(sizeof(utsname))
+	ret := int(C.uname(buffer))
+	if ret != 0 {
+		println('error reading user os')
+		return 'UNKNOWN'
+	}
+
+//Mac has all of these empty but sysname
+/*
+	for name in [ tos(buffer.sysname, strlen(buffer.sysname)),
+			tos(buffer.nodename, strlen(buffer.nodename)),
+			tos(buffer.release, strlen(buffer.release)), tos(buffer.version, strlen(buffer.version)),
+			tos(buffer.domainname, strlen(buffer.domainname))] {
+		println(name)
+	}
+*/
+	return tos(buffer.sysname, strlen(buffer.sysname))
+}
+
 pub fn user_os() string {
-	$if linux {
+	if uname() == 'Linux' {
 		return 'linux'
 	}
-	$if mac {
+	if uname() == 'Darwin' {
 		return 'mac'
 	}
-	$if windows {
+	if uname() == 'Windows' {
 		return 'windows'
 	}
 	return 'unknown'
