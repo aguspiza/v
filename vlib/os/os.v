@@ -457,11 +457,9 @@ pub fn get_raw_line() string {
 }
 
 pub fn uname() string {
-
 	$if windows {
 		return 'Windows'
 	}
-
 	mut buffer := &utsname{}
 	//mut buffer := malloc(sizeof(utsname))
 	ret := int(C.uname(buffer))
@@ -470,11 +468,13 @@ pub fn uname() string {
 		return 'UNKNOWN'
 	}
 
-//Mac has all of these empty but sysname
+//Mac has all of these empty but sysname and machine
 /*
 	for name in [ tos(buffer.sysname, strlen(buffer.sysname)),
 			tos(buffer.nodename, strlen(buffer.nodename)),
-			tos(buffer.release, strlen(buffer.release)), tos(buffer.version, strlen(buffer.version)),
+			tos(buffer.release, strlen(buffer.release)), 
+			tos(buffer.version, strlen(buffer.version)),
+			tos(buffer.machine, strlen(buffer.machine)),
 			tos(buffer.domainname, strlen(buffer.domainname))] {
 		println(name)
 	}
@@ -483,16 +483,16 @@ pub fn uname() string {
 }
 
 pub fn user_os() string {
-	if uname() == 'Linux' {
-		return 'linux'
+	switch uname() {
+		case 'Linux':
+			return 'linux'
+		case 'Darwin':
+			return 'mac'
+		case 'Windows':
+			return 'windows'
+		default:
+			return 'unknown'
 	}
-	if uname() == 'Darwin' {
-		return 'mac'
-	}
-	if uname() == 'Windows' {
-		return 'windows'
-	}
-	return 'unknown'
 }
 
 // home_dir returns path to user's home directory.

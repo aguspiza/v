@@ -491,7 +491,7 @@ fn (c &V) cc_windows_cross() {
 fn (v mut V) cc() {
 	// Cross compiling for Windows on mac
 	if v.os == WINDOWS {
-		$if mac { 
+		if os.user_os() == 'mac' { 
 			v.cc_windows_cross()  
 			return 
 		} 
