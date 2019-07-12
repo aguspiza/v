@@ -33,3 +33,9 @@ fn test_write_and_read_string_to_file() {
 
   os.rm(filename)
 }
+
+fn test_homedir_not_empty() {
+  home= os.home_dir()
+  println('home: "$home"')
+  assert home.len != 0
+}
